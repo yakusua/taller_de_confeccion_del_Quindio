@@ -82,9 +82,9 @@ defmodule ValidacionLotes do
   esta funcion valida un lote, verificando que cumpla con las reglas de negocio.
   si esta bien, devuelve {:ok, lote}, si no, devuelve {:error, motivo}.
   """
-  defp validar_lote(lote, lineas, confeccionistas) do
+  defp validar_lote({:ok, lote}, {:ok, lineas}, {:ok, confeccionistas}) do
 
-    with {:ok, _} <- VerificacionDatos.comprobar_lote(lote),
+    with {:ok, _} <- VerificacionDatos.comprobar_lote(lote),  #estos evaluan si cumplen con las logica de negocio
          :ok <- confeccionista_existe?(lote.confeccionista, confeccionistas),
          :ok <- linea_existe?(lote.linea, lineas),
          :ok <- dia_valido?(lote.dia),
@@ -96,7 +96,10 @@ defmodule ValidacionLotes do
       {:error, motivo}
 
     end
+  end
 
+  defp validar_lote(_lote, _lineas, _confeccionistas) do
+    {:error, :estructura_invalida}
   end
 
   @doc """
