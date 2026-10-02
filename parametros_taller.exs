@@ -1,4 +1,4 @@
-defmodule TallerConfeccion do
+defmodule ParametrosTaller do
   @tarifa_base_prenda 3200
   @meta_diaria_taller 600
   @dias_produccion 1..6
