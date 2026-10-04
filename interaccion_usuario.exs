@@ -58,7 +58,7 @@ defmodule InteraccionUsuario do
     end
   end
 
-  defp mostrar_comprobante(confeccionista, lotes_validos) do
+ defp mostrar_comprobante(confeccionista, lotes_validos) do
     lotes_c = Enum.filter(lotes_validos, fn l -> l.confeccionista == confeccionista.codigo end)
 
     dias_trabajados =
@@ -70,8 +70,10 @@ defmodule InteraccionUsuario do
           nil
         else
           total_prendas_dia = Enum.sum(Enum.map(lotes_dia, fn l -> l.prendas end))
-          valor_lotes_dia = Enum.sum(Enum.map(lotes_dia, fn l -> Calculos.valor_lote(l) end))
-          bonificacion_dia = Calculos.bonificacion_diaria(lotes_dia)
+
+          # CORRECCIÓN: Se cambia Calculos por Liquidacion
+          valor_lotes_dia = Enum.sum(Enum.map(lotes_dia, fn l -> Liquidacion.calcular_valor_lote(l) end))
+          bonificacion_dia = Liquidacion.calcular_bonificacion_productividad(lotes_dia)
 
           %{
             dia: dia,
@@ -85,7 +87,10 @@ defmodule InteraccionUsuario do
 
     suma_lotes = Enum.sum(Enum.map(dias_trabajados, fn d -> d.valor_lotes end))
     suma_bonificaciones = Enum.sum(Enum.map(dias_trabajados, fn d -> d.bonificacion end))
-    descuento_alquiler = Calculos.descuento_alquiler(dias_trabajados)
+
+    cant_dias = length(dias_trabajados)
+    descuento_alquiler = Liquidacion.calcular_alquiler(confeccionista, cant_dias)
+
     neto = suma_lotes + suma_bonificaciones - descuento_alquiler
 
     IO.puts("\n==================================================")
