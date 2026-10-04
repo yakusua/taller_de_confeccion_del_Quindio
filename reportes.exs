@@ -239,4 +239,22 @@ defmodule Reportes do
       {:ok, cumplen}
     end
   end
+
+  @doc "C.1: Función de Ranking para la parte de Investigación"
+  def ranking(liquidaciones, opciones \\ []) do
+    campo = Keyword.get(opciones, :campo, :neto)
+    orden = Keyword.get(opciones, :orden, :desc)
+    limite = Keyword.get(opciones, :limite, length(liquidaciones))
+
+    liquidaciones_ordenadas =
+      Enum.sort_by(liquidaciones, fn liq ->
+        case campo do
+          :neto -> liq.neto
+          :bruto -> liq.suma_lotes
+          :prendas -> Map.get(liq, :prendas, 0)
+        end
+      end, orden)
+
+    Enum.take(liquidaciones_ordenadas, limite)
+  end
 end
