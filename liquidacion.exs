@@ -72,7 +72,10 @@ defmodule Liquidacion do
     lotes
     |> Enum.group_by(& &1.dia)
     |> Enum.reduce(0, fn {_dia, lotes_del_dia}, acumulador_bono ->
-      total_prendas_dia = Enum.sum_by(lotes_del_dia, & &1.prendas)
+      total_prendas_dia =
+        lotes_del_dia
+        |> Enum.map(& &1.prendas)
+        |> Enum.sum()
 
       if total_prendas_dia >= ParametrosTaller.prendas_diarias_bonificacion() do
         acumulador_bono + ParametrosTaller.bonificacion_diaria()
