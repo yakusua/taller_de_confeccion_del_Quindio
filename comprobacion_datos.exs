@@ -1,5 +1,5 @@
 
-def VerificacionDatos do
+defmodule VerificacionDatos do
 
   def comprobar_confeccionista(%{codigo: codigo, nombre: nombre, alquiler: alquiler} = mapa)
   when is_binary(codigo) and is_binary(nombre) and is_boolean(alquiler) do
