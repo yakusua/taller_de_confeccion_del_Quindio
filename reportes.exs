@@ -257,4 +257,12 @@ defmodule Reportes do
 
     Enum.take(liquidaciones_ordenadas, limite)
   end
+
+  @doc "C.2: Combinar la producción con un taller aliado"
+  def combinar_produccion_aliado(produccion_propia, taller_aliado) do
+    Map.merge(produccion_propia, taller_aliado, fn _dia, prendas1, prendas2 ->
+      prendas1 + prendas2
+    end)
+  end
+  
 end
