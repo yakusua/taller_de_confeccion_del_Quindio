@@ -43,3 +43,5 @@ defmodule MedicionesC3 do
     IO.puts("Tiempo con '[elem|acc]': #{tiempo_prep / 1_000} ms")
   end
 end
+
+MedicionesC3.ejecutar()
