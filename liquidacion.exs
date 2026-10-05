@@ -101,10 +101,7 @@ defmodule Liquidacion do
   si el confeccionista usa maquina, si no, devuelve 0.
   """
   def calcular_alquiler(confeccionista, dias_trabajados) do
-    usa_maquina? =
-      Map.get(confeccionista, :maquina, false) or
-      Map.get(confeccionista, :utiliza_maquina, false) or
-      Map.get(confeccionista, :usa_maquina, false)
+    usa_maquina? = Map.get(confeccionista, :alquiler, false) == true
 
     if usa_maquina? do
       dias_trabajados * ParametrosTaller.alquiler_maquina_dia()

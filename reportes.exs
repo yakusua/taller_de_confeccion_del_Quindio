@@ -264,5 +264,5 @@ defmodule Reportes do
       prendas1 + prendas2
     end)
   end
-  
+
 end
