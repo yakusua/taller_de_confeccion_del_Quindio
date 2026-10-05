@@ -4,15 +4,24 @@ defmodule Util do
   Cumple con todas las restricciones de la asignatura.
   """
 
+  @doc """
+  Muestra un mensaje en la consola.
+  """
   def mostrar_mensaje(mensaje) do
     IO.puts(mensaje)
   end
 
+  @doc """
+  Muestra un mensaje de error en la consola.
+  """
   def mostrar_error(mensaje) do
     IO.puts(:stderr, mensaje)
   end
 
 
+  @doc """
+  Solicita al usuario ingresar un valor y lo devuelve como texto, entero, real o booleano según el tipo especificado.
+  """
   def ingresar(mensaje, :texto) do
     mensaje
     |> IO.gets()
@@ -20,6 +29,9 @@ defmodule Util do
     |> String.trim()
   end
 
+  @doc """
+  Solicita al usuario ingresar un valor y lo devuelve como entero.
+  """
   def ingresar(mensaje, :entero) do
     texto = ingresar(mensaje, :texto)
 
@@ -33,6 +45,9 @@ defmodule Util do
     end
   end
 
+  @doc """
+  Solicita al usuario ingresar un valor y lo devuelve como real (float).
+  """
   def ingresar(mensaje, :real) do
     texto = ingresar(mensaje, :texto)
 
@@ -50,6 +65,9 @@ defmodule Util do
     end
   end
 
+  @doc """
+  Solicita al usuario ingresar un valor y lo devuelve como booleano.
+  """
   def ingresar(mensaje, :booleano) do
     texto =
       mensaje
@@ -60,10 +78,16 @@ defmodule Util do
   end
 
 
+  @doc """
+  Formatea un valor para su impresión en la consola.
+  """
   def formater(valor) when is_float(valor) do
     :erlang.float_to_binary(valor, decimals: 2)
   end
 
+  @doc """
+  Formatea un valor entero para su impresión en la consola.
+  """
   def formater(valor) when is_integer(valor) do
     :erlang.float_to_binary(valor * 1.0, decimals: 2)
   end

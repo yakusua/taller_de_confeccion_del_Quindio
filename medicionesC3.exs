@@ -1,4 +1,11 @@
 defmodule MedicionesC3 do
+  @moduledoc """
+  Este módulo contiene funciones para medir el rendimiento de ciertas operaciones en Elixir, específicamente la búsqueda en listas versus mapas y la construcción de listas usando `Enum.reduce`.
+  """
+
+  @doc """
+  Ejecuta los experimentos de medición de rendimiento y muestra los resultados en la consola
+  """
   def ejecutar do
     IO.puts("=== EXPERIMENTO 1: Búsqueda en Lista vs Mapa ===")
     lista_confeccionistas =
