@@ -27,10 +27,7 @@ defmodule InteraccionUsuario do
       [c, l, dia_str, prendas_str, defectos_str] = Enum.map(campos, &String.trim/1)
 
       case {Integer.parse(dia_str), Integer.parse(prendas_str), Float.parse(defectos_str)} do
-        {{dia, ""}, {prendas, ""}, {defectos, ""}} ->
-          {:ok, %{confeccionista: c, linea: l, dia: dia, prendas: prendas, defectos: defectos}}
-
-        {{dia, ""}, {prendas, ""}, {defectos, _resto}} when is_float(defectos) or is_integer(defectos) ->
+        {{dia, _}, {prendas, _}, {defectos, _}} ->
           {:ok, %{confeccionista: c, linea: l, dia: dia, prendas: prendas, defectos: defectos}}
 
         _ ->
