@@ -11,7 +11,7 @@ defmodule InteraccionUsuario do
   """
   def pedir_lote_adicional do
     IO.puts("Ingrese un lote adicional (confeccionista;linea;dia;prendas;defectos)")
-    entrada = IO.gets("o Enter para omitir: ") |> String.trim()
+    entrada = Util.ingresar("o Enter para omitir: ",:texto) |> String.trim()
 
     if entrada == "" do
       :omitido
@@ -20,6 +20,11 @@ defmodule InteraccionUsuario do
     end
   end
 
+  @doc """
+  esta funcion sintetiza la entrada del usuario, para verificar si es valida y convertirla en un mapa de lote.
+  como se usa parse, si el usuario escribe un valor numerico y des pues texto, el parser solo tomara el valor numerico.
+  ejemplo "1confeccionista;1linea;3dias;50prendas;2.5%"
+  """
   defp procesar_entrada_lote(entrada) do
     campos = String.split(entrada, ";")
 
@@ -43,7 +48,7 @@ defmodule InteraccionUsuario do
   """
   def consultar_comprobante(lotes_validos, confeccionistas) do
     codigo_ingresado =
-      IO.gets("\nIngrese el código del confeccionista para ver comprobante: ")
+      Util.ingresar("\nIngrese el código del confeccionista para ver comprobante: ", :texto)
       |> String.trim()
 
     confeccionista = Enum.find(confeccionistas, fn c -> c.codigo == codigo_ingresado end)
@@ -55,11 +60,14 @@ defmodule InteraccionUsuario do
     end
   end
 
- defp mostrar_comprobante(confeccionista, lotes_validos) do
+  @doc """
+  Muestra el comprobante detallado de un confeccionista, incluyendo días trabajados, prendas, valor de lotes, bonificaciones y neto a pagar.
+  """
+  defp mostrar_comprobante(confeccionista, lotes_validos) do
     lotes_c = Enum.filter(lotes_validos, fn l -> l.confeccionista == confeccionista.codigo end)
 
     dias_trabajados =
-      1..6
+      ParametrosTaller.dias_produccion()
       |> Enum.map(fn dia ->
         lotes_dia = Enum.filter(lotes_c, fn l -> l.dia == dia end)
 
@@ -68,7 +76,6 @@ defmodule InteraccionUsuario do
         else
           total_prendas_dia = Enum.sum(Enum.map(lotes_dia, fn l -> l.prendas end))
 
-          # CORRECCIÓN: Se cambia Calculos por Liquidacion
           valor_lotes_dia = Enum.sum(Enum.map(lotes_dia, fn l -> Liquidacion.calcular_valor_lote(l) end))
           bonificacion_dia = Liquidacion.calcular_bonificacion_productividad(lotes_dia)
 

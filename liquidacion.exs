@@ -59,6 +59,9 @@ defmodule Liquidacion do
     round(valor_base * factor)
   end
 
+  @doc """
+  simples funciones que devuelven el factor de ajuste
+  """
   defp factor_ajuste_defectos(defectos) when defectos <= 2.0, do: 1.07
   defp factor_ajuste_defectos(defectos) when defectos <= 5.0, do: 1.00
   defp factor_ajuste_defectos(defectos) when defectos <= 10.0, do: 0.88

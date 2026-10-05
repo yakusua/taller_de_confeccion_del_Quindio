@@ -38,8 +38,8 @@ defmodule ValidacionLotes do
   Regresa únicamente la primera regla que incumple.
   """
   def validar_lote(lote, confeccionistas, lineas) do
-    with :ok <- confeccionista_existe?(lote, confeccionistas),
-         :ok <- linea_existe?(lote, lineas),
+    with :ok <- validar_confeccionista(lote, confeccionistas),
+         :ok <- validar_linea(lote, lineas),
          :ok <- dia_valido?(lote),
          :ok <- prendas_en_rango?(lote),
          :ok <- porcentaje_valido?(lote) do
@@ -49,30 +49,77 @@ defmodule ValidacionLotes do
     end
   end
 
-  defp confeccionista_existe?(%{confeccionista: codigo}, confeccionistas) when is_binary(codigo) do
-    if Enum.any?(confeccionistas, fn c -> c.codigo == codigo end) do
-      :ok
-    else
-      {:error, :confeccionista_desconocido}
+  @doc """
+  valida que el confeccionista cumple con las directrices de comprobacion_datos.exs y si no , devuelve como motivo de error :error_de_datos,
+  si el confeccionista no existe, devuelve como motivo de error :confeccionista_desconocido
+  """
+  defp validar_confeccionista(%{confeccionista: codigo}, confeccionistas) do
+    case Enum.find(confeccionistas, fn c -> c.codigo == codigo end) do
+      nil ->
+        {:error, :confeccionista_desconocido}
+
+      confeccionista ->
+        case VerificacionDatos.comprobar_confeccionista(confeccionista) do
+          {:ok, _} -> :ok
+          {:error, _motivo} -> {:error, :error_de_datos}
+          _-> {:error, :error_de_datos}
+        end
     end
   end
-  defp confeccionista_existe?(_lote, _confeccionistas), do: {:error, :confeccionista_desconocido}
 
-  defp linea_existe?(%{linea: id_linea}, lineas) when is_binary(id_linea) do
-    if Enum.any?(lineas, fn l -> l.id == id_linea end) do
-      :ok
-    else
-      {:error, :linea_desconocida}
+  @doc """
+  si no cumple con la esa de linea, devuelve como motivo de error :confeccionista_desconocido.
+  """
+  defp validar_confeccionista(_lote, _confeccionistas), do: {:error, :confeccionista_desconocido}
+
+  @doc """
+  valida que la linea cumpla con las directrices de comprobacion_datos.exs y si no , devuelve como motivo de error :error_de_datos,
+  si la linea no existe, devuelve como motivo de error :linea_desconocida
+  """
+  defp validar_linea(%{linea: id_linea}, lineas)do
+    case Enum.find(lineas, fn l -> l.id == id_linea end) do
+      nil ->
+        {:error, :linea_desconocida}
+
+      linea ->
+        case VerificacionDatos.comprobar_linea(linea) do
+          {:ok, _} -> :ok
+          {:error, _motivo} -> {:error, :error_de_datos}
+        end
     end
   end
-  defp linea_existe?(_lote, _lineas), do: {:error, :linea_desconocida}
 
-  defp dia_valido?(%{dia: dia}) when is_integer(dia) and dia in 1..6, do: :ok
+  @doc """
+  si los dias son invalidos, devuelve como motivo de error :dia_invalido
+  """
+  defp dia_valido?(%{dia: dia}) when is_integer(dia) do
+    if  dia in ParametrosTaller.dias_produccion() do
+      :ok
+    else
+      {:error, :dia_invalido}
+    end
+  end
+  @doc """
+  si los dias son invalidos, devuelve como motivo de error :dia_invalido
+  """
   defp dia_valido?(_lote), do: {:error, :dia_invalido}
 
-  defp prendas_en_rango?(%{prendas: prendas}) when is_integer(prendas) and prendas >= 1 and prendas <= 180, do: :ok
+  @doc """
+  si las prendas estan fuera de rango, devuelve como motivo de error :prendas_fuera_de_rango
+  """
+  defp prendas_en_rango?(%{prendas: prendas}) when is_integer(prendas) do
+    if prendas >= 1 and prendas <= ParametrosTaller.max_prendas_lote() do
+      :ok
+    else
+      {:error, :prendas_fuera_de_rango}
+    end
+  end
   defp prendas_en_rango?(_lote), do: {:error, :prendas_fuera_de_rango}
 
+  @doc """
+  si el porcentaje de defectos es invalido, devuelve como motivo de error :porcentaje_invalido
+  """
   defp porcentaje_valido?(%{defectos: defectos}) when is_number(defectos) and defectos >= 0.0 and defectos <= 100.0, do: :ok
   defp porcentaje_valido?(_lote), do: {:error, :porcentaje_invalido}
+
 end

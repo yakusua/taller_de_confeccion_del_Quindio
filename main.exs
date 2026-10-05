@@ -13,6 +13,10 @@ defmodule Programa do
   reportes y demostraciones adicionales (C.1 y C.2).
   """
 
+  @doc """
+  Función principal que coordina la ejecución del programa.
+  ejecuta los reportes, y desde ella se accede a Datos
+  """
   def main do
     Util.mostrar_mensaje("==================================================")
     Util.mostrar_mensaje(" SISTEMA DE GESTIÓN DE TALLER DE CONFECCIONES ")
@@ -39,6 +43,9 @@ defmodule Programa do
 
     {validos, rechazados} = ValidacionLotes.validar_todos(lotes_totales, confeccionistas, lineas)
 
+    # mostrar_todos_los_lotes(validos, rechazados) #  para depuracion, con esto puedes ver los lotes validos, y los invalidos
+
+
     mostrar_reporte_rechazados(rechazados)
     mostrar_reporte_produccion_diaria(validos)
     mostrar_reporte_lineas(validos, lineas)
@@ -57,6 +64,9 @@ defmodule Programa do
 
   # --- Métodos Auxiliares para C.1 y C.2 ---
 
+  @doc """
+  Demuestra la funcionalidad de ranking con keyword lists.
+  """
   defp demostrar_ranking_c1(validos, confeccionistas) do
     Util.mostrar_mensaje("\n==================================================")
     Util.mostrar_mensaje(" C.1: DEMOSTRACIÓN DE RANKING CON KEYWORD LISTS")
@@ -74,6 +84,9 @@ defmodule Programa do
     imprimir_ranking(Reportes.ranking(liquidaciones, orden: :asc, campo: :bruto))
   end
 
+  @doc """
+  Demuestra la combinación de producción propia con la de un taller aliado.
+  """
   defp imprimir_ranking(lista) do
     Enum.each(lista, fn elem ->
       neto = Map.get(elem, :neto, 0)
@@ -108,6 +121,9 @@ defmodule Programa do
 
   # --- Métodos Auxiliares de Formateo de Reportes R1-R8 ---
 
+  @doc """
+  Muestra el reporte de lotes rechazados, incluyendo conteo por motivo.
+  """
   defp mostrar_reporte_rechazados(rechazados) do
     Util.mostrar_mensaje("\n--- R1: LOTES RECHAZADOS ---")
     reporte = Reportes.lotes_rechazados(rechazados)
@@ -119,6 +135,9 @@ defmodule Programa do
     end)
   end
 
+  @doc """
+  Muestra el reporte de producción diaria, indicando si se alcanzó la meta.
+  """
   defp mostrar_reporte_produccion_diaria(validos) do
     Util.mostrar_mensaje("\n--- R2: PRODUCCIÓN DIARIA Y META ---")
     reporte = Reportes.produccion_diaria(validos)
@@ -131,6 +150,9 @@ defmodule Programa do
     Util.mostrar_mensaje("¿Alcanzó meta todos los días?: #{if reporte.alcanzo_meta_todos_los_dias, do: "SÍ", else: "NO"}")
   end
 
+  @doc """
+  Muestra el reporte de producción por línea, incluyendo productividad por puesto.
+  """
   defp mostrar_reporte_lineas(validos, lineas) do
     Util.mostrar_mensaje("\n--- R3: PRODUCCIÓN POR LÍNEA ---")
     Enum.each(Reportes.produccion_por_linea(validos, lineas), fn l ->
@@ -138,6 +160,9 @@ defmodule Programa do
     end)
   end
 
+  @doc """
+  Muestra el reporte de liquidación, incluyendo los valores netos a pagar.
+  """
   defp mostrar_reporte_liquidacion(validos, confeccionistas) do
     Util.mostrar_mensaje("\n--- R4: TABLA DE LIQUIDACIÓN ---")
     tabla = Reportes.tabla_liquidacion(validos, confeccionistas)
@@ -147,6 +172,9 @@ defmodule Programa do
     end)
   end
 
+  @doc """
+  Muestra el reporte de top diario y líderes de la semana.
+  """
   defp mostrar_reporte_top_diario(validos, confeccionistas) do
     Util.mostrar_mensaje("\n--- R5: TOP DIARIO Y LÍDERES ---")
     reporte = Reportes.top_diario(validos, confeccionistas)
@@ -160,6 +188,9 @@ defmodule Programa do
     Util.mostrar_mensaje("  Líder(es) de la semana: #{Enum.join(lideres, ", ")}")
   end
 
+  @doc """
+  Muestra el reporte de mejor calidad, indicando el confeccionista con menor porcentaje de defectos.
+  """
   defp mostrar_reporte_calidad(validos, confeccionistas) do
     Util.mostrar_mensaje("\n--- R6: MEJOR CALIDAD ---")
     case Reportes.mejor_calidad(validos, confeccionistas) do
@@ -171,6 +202,9 @@ defmodule Programa do
     end
   end
 
+  @doc """
+  Muestra el reporte de costo promedio por prenda, incluyendo total pagado y prendas válidas.
+  """
   defp mostrar_reporte_costo_promedio(validos, confeccionistas) do
     Util.mostrar_mensaje("\n--- R7: COSTO PROMEDIO POR PRENDA ---")
     res = Reportes.costo_promedio(validos, confeccionistas)
@@ -179,6 +213,9 @@ defmodule Programa do
     Util.mostrar_mensaje("  Costo promedio/prenda: $#{Util.formater(res.costo_promedio_prenda)}")
   end
 
+  @doc """
+  Muestra el reporte de cobertura total de líneas, indicando los confeccionistas que han trabajado en todas las líneas.
+  """
   defp mostrar_reporte_cobertura(validos, confeccionistas, lineas) do
     Util.mostrar_mensaje("\n--- R8: COBERTURA TOTAL DE LÍNEAS ---")
     case Reportes.cobertura_todas_las_lineas(validos, confeccionistas, lineas) do
@@ -190,6 +227,21 @@ defmodule Programa do
         Util.mostrar_mensaje("  #{msg}")
     end
   end
+
+  @doc """
+  Muestra todos los lotes válidos e inválidos para depuración, osea esta funcion no se llama en el flujo normal del main, por eso su llamado esta comentado :) .
+  """
+  defp mostrar_todos_los_lotes(validos,invalidos) do
+      Util.mostrar_mensaje("\n==================================================")
+      Util.mostrar_mensaje(" lotes validos: #{length(validos)}")
+      Util.mostrar_mensaje("==================================================")
+      validos |> Enum.each(fn l -> Util.mostrar_mensaje("  [V] #{inspect(l)}") end)
+      Util.mostrar_mensaje("\n==================================================")
+      Util.mostrar_mensaje(" lotes invalidos: : #{length(invalidos)}")
+      Util.mostrar_mensaje("==================================================")
+      invalidos |> Enum.each(fn r -> Util.mostrar_mensaje("  [X] #{inspect(r)}") end)
+  end
+
 end
 
 Programa.main()
